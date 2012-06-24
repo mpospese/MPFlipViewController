@@ -24,6 +24,7 @@
 @property (nonatomic, readonly) BOOL isAnimating;
 @property (nonatomic, assign, getter = isGestureDriven) BOOL gestureDriven;
 @property (nonatomic, assign, getter = isPanning) BOOL panning;
+@property (nonatomic, assign, getter = isRubberbanding) BOOL rubberbanding;
 @property (nonatomic, strong) MPFlipTransition *flipTransition;
 @property (assign, nonatomic) CGPoint panStart;
 @property (assign, nonatomic) CGPoint lastPanPosition;
@@ -43,6 +44,7 @@
 @synthesize gesturesAdded = _gesturesAdded;
 @synthesize gestureDriven = _gestureDriven;
 @synthesize panning = _panning;
+@synthesize rubberbanding = _rubberbanding;
 @synthesize flipTransition = _flipTransition;
 @synthesize panStart = _panStart;
 @synthesize lastPanPosition = _lastPanPosition;
@@ -61,6 +63,7 @@
 		_gesturesAdded = NO;
 		_panning = NO;
 		_gestureDriven = NO;
+		_rubberbanding = NO;
     }
     return self;
 }
@@ -260,7 +263,7 @@
 		if (fabs(velocityMinorComponent) > fabs(velocityComponent))
 			velocityComponent = 0;
 		
-		if (velocityComponent < -SWIPE_ESCAPE_VELOCITY || velocityComponent > SWIPE_ESCAPE_VELOCITY)
+		if (![self isRubberbanding] && (velocityComponent < -SWIPE_ESCAPE_VELOCITY || velocityComponent > SWIPE_ESCAPE_VELOCITY))
 		{
 			// Detected a swipe to the left
 			NSLog(@"Escape velocity reached.");
@@ -295,8 +298,10 @@
 			// If moving slowly, let page fall either forward or back depending on where we were
 			BOOL shouldFallBack = [self isFlipFrontPage];
 			
+			if ([self isRubberbanding])
+				shouldFallBack = YES;
 			// But, if user was swiping in an appropriate direction, go ahead and honor that
-			if (velocityComponent < -SWIPE_THRESHOLD)
+			else if (velocityComponent < -SWIPE_THRESHOLD)
 			{
 				// Detected a swipe to the left/top
 				shouldFallBack = self.direction != MPFlipViewControllerDirectionForward;
@@ -360,6 +365,11 @@
 	CGFloat difference = positionValue - startValue;
 	CGFloat halfWidth = fabsf(startValue - (dimensionValue / 2));
 	CGFloat progress = difference / halfWidth * (isForward? - 1 : 1);
+	if ([self isRubberbanding])
+	{
+		if (progress > 0.667)
+			progress = 0.667; // don't allow user to pull past 2/3 up when rubberbanding before 1st or after last page
+	}
 	
 	//NSLog(@"Difference = %.2f, Half width = %.2f, rawProgress = %.4f", difference, halfWidth, progress);
 	if (progress < 0)
@@ -402,7 +412,11 @@
 	[[self dataSource] flipViewController:self viewControllerBeforeViewController:[self viewController]];
 	
 	if (!destinationController)
-		return NO;
+	{
+		// we're at first or last page, but allow user to lift up current page a bit,
+		// so we'll pass in a dummy blank page to show behind
+		[self setRubberbanding:YES];
+	}
 	
 	[self setGestureDriven:YES];
 	[self startFlipToViewController:destinationController fromViewController:[self viewController] withDirection:direction];
@@ -468,6 +482,7 @@
 	self.sourceController = nil;
 	self.destinationController = nil;
 	[self setGestureDriven:NO];
+	[self setRubberbanding:NO];
 }
 
 - (void)gotoPreviousPage
