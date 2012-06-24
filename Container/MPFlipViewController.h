@@ -29,18 +29,25 @@ enum {
 };
 typedef NSInteger MPFlipViewControllerDirection; // For 'MPFlipViewControllerOrientationHorizontal', 'forward' is right-to-left, like pages in a book. For 'MPFlipViewControllerOrientationVertical', bottom-to-top, like pages in a wall calendar.
 
-@protocol MPFlipViewControllerDataSource;
+@protocol MPFlipViewControllerDelegate, MPFlipViewControllerDataSource;
 
 @interface MPFlipViewController : UIViewController<UIGestureRecognizerDelegate>
 
 @property (nonatomic, readonly) MPFlipViewControllerOrientation orientation;
 @property (nonatomic, readonly) UIViewController *viewController;
 @property (nonatomic, readonly) NSArray *gestureRecognizers;
+@property (nonatomic, assign) id <MPFlipViewControllerDelegate> delegate;
 @property (nonatomic, assign) id <MPFlipViewControllerDataSource> dataSource; // If nil, user gesture-driven navigation will be disabled.
 
 - (id)initWithOrientation:(MPFlipViewControllerOrientation)orientation;
 
 - (void)setViewController:(UIViewController *)viewController direction:(MPFlipViewControllerDirection)direction animated:(BOOL)animated completion:(void (^)(BOOL finished))completion;
+
+@end
+
+@protocol MPFlipViewControllerDelegate
+
+- (void)flipViewController:(MPFlipViewController *)flipViewController didFinishAnimating:(BOOL)finished previousViewController:(UIViewController *)previousViewController transitionCompleted:(BOOL)completed;
 
 @end
 

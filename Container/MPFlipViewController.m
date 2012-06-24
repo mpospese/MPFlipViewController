@@ -22,6 +22,7 @@
 @property (nonatomic, assign) NSArray *gestureRecognizers;
 @property (nonatomic, assign) BOOL gesturesAdded;
 @property (nonatomic, readonly) BOOL isAnimating;
+@property (nonatomic, assign, getter = isGestureDriven) BOOL gestureDriven;
 @property (nonatomic, assign, getter = isPanning) BOOL panning;
 @property (nonatomic, strong) MPFlipTransition *flipTransition;
 @property (assign, nonatomic) CGPoint panStart;
@@ -31,12 +32,14 @@
 
 @implementation MPFlipViewController
 
+@synthesize delegate = _delegate;
 @synthesize dataSource = _dataSource;
 
 @synthesize orientation = _orientation;
 @synthesize childViewController = _childViewController;
 @synthesize gestureRecognizers = _gestureRecognizers;
 @synthesize gesturesAdded = _gesturesAdded;
+@synthesize gestureDriven = _gestureDriven;
 @synthesize panning = _panning;
 @synthesize flipTransition = _flipTransition;
 @synthesize panStart = _panStart;
@@ -53,6 +56,7 @@
 		_direction = MPFlipViewControllerDirectionForward;
 		_gesturesAdded = NO;
 		_panning = NO;
+		_gestureDriven = NO;
     }
     return self;
 }
@@ -144,7 +148,7 @@
 						  withDirection:(isForward? MPFlipStyleDefault : MPFlipStyleDirectionBackward)];
 		
 		[self.flipTransition perform:^(BOOL finished) {
-			[self endFlip:YES completion:completion];
+			[self endFlipAnimation:finished transitionCompleted:YES completion:completion];
 		}];
 	}
 	else 
@@ -281,7 +285,7 @@
 					fromProgress -= 1;
 			}
 			[[self flipTransition] animateFromProgress:fromProgress shouldFallBack:shouldFallBack completion:^(BOOL finished) {
-				[self endFlip:!shouldFallBack completion:nil];
+				[self endFlipAnimation:finished transitionCompleted:!shouldFallBack completion:nil];
 			}];
         }
 		else if (![self isAnimating])
@@ -355,6 +359,7 @@
 	if (!destinationController)
 		return NO;
 	
+	[self setGestureDriven:YES];
 	[self startFlipToViewController:destinationController fromViewController:[self viewController] withDirection:direction];
 	
 	return YES;
@@ -379,7 +384,7 @@
 	[self.flipTransition prepareForStage2];
 }
 
-- (void)endFlip:(BOOL)transitionCompleted completion:(void (^)(BOOL finished))completion
+- (void)endFlipAnimation:(BOOL)animationFinished transitionCompleted:(BOOL)transitionCompleted completion:(void (^)(BOOL finished))completion
 {
 	BOOL didStartAsPan = [self isPanning];
 	// clear some flags
@@ -404,11 +409,19 @@
 	}
 	
 	if (completion)
-		completion(YES);
+		completion(animationFinished);
+	
+	if ([self isGestureDriven])
+	{
+		// notify delegate that we finished the page turn animation, indicating whether the user actually completed the page turn
+		// or not, and also whether the animation ran to completion or not
+		[[self delegate] flipViewController:self didFinishAnimating:animationFinished previousViewController:self.sourceController transitionCompleted:transitionCompleted];
+	}
 	
 	// clear remaining flags
 	self.sourceController = nil;
 	self.destinationController = nil;
+	[self setGestureDriven:NO];
 }
 
 - (void)gotoPreviousPage
@@ -420,6 +433,7 @@
 	if (!previousController)
 		return;
 	
+	[self setGestureDriven:YES];
 	[self setViewController:previousController direction:MPFlipViewControllerDirectionReverse animated:YES completion:nil];
 }
 
@@ -432,6 +446,7 @@
 	if (!nextController)
 		return;
 	
+	[self setGestureDriven:YES];
 	[self setViewController:nextController direction:MPFlipViewControllerDirectionForward animated:YES completion:nil];	
 }
 

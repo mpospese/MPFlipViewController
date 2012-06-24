@@ -18,6 +18,7 @@
 @interface ViewController ()
 
 @property (assign, nonatomic) int previousIndex;
+@property (assign, nonatomic) int tentativeIndex;
 
 @end
 
@@ -27,6 +28,7 @@
 @synthesize flipViewController = _flipViewController;
 @synthesize corkboard = _corkboard;
 @synthesize previousIndex = _previousIndex;
+@synthesize tentativeIndex = _tentativeIndex;
 
 - (void)viewDidLoad
 {
@@ -37,6 +39,7 @@
 	
 	// Configure the page view controller and add it as a child view controller.
 	self.flipViewController = [[MPFlipViewController alloc] initWithOrientation:MPFlipViewControllerOrientationHorizontal];
+	self.flipViewController.delegate = self;
 	self.flipViewController.dataSource = self;
 	
 	// Set the page view controller's bounds using an inset rect so that self's view is visible around the edges of the pages.
@@ -100,6 +103,16 @@
 	return page;
 }
 
+#pragma mark - MPFlipViewControllerDelegate protocol
+
+- (void)flipViewController:(MPFlipViewController *)flipViewController didFinishAnimating:(BOOL)finished previousViewController:(UIViewController *)previousViewController transitionCompleted:(BOOL)completed
+{
+	if (completed)
+	{
+		self.previousIndex = self.tentativeIndex;
+	}
+}
+
 #pragma mark - MPFlipViewControllerDataSource protocol
 
 - (UIViewController *)flipViewController:(MPFlipViewController *)flipViewController viewControllerBeforeViewController:(UIViewController *)viewController
@@ -108,7 +121,7 @@
 	index--;
 	if (index < MOVIE_MIN)
 		index = MOVIE_MAX;
-	self.previousIndex = index;
+	self.tentativeIndex = index;
 	return [self contentViewWithIndex:index];
 }
 
@@ -118,7 +131,7 @@
 	index++;
 	if (index > MOVIE_MAX)
 		index = MOVIE_MIN;
-	self.previousIndex = index;
+	self.tentativeIndex = index;
 	return [self contentViewWithIndex:index];	
 }
 
