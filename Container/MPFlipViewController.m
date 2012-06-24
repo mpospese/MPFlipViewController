@@ -310,20 +310,6 @@
 			// finish Animation
 			[self finishPan:shouldFallBack];
         }
-		else if (![self isAnimating])
-		{
-			// we weren't panning (because touch didn't start near any margin) but test for swipe
-			if (velocityComponent < -SWIPE_ESCAPE_VELOCITY)
-			{
-				// Detected a swipe to the left/top
-				[self gotoNextPage];
-			}
-			else if (velocityComponent > SWIPE_ESCAPE_VELOCITY)
-			{
-				// Detected a swipe to the right/bottom
-				[self gotoPreviousPage];
-			}
-		}
 	}
 }
 
@@ -335,11 +321,25 @@
 	if ([self isAnimating])
 		return NO;
 	
+	if ([gestureRecognizer isKindOfClass:[UITapGestureRecognizer class]] || [gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]])
+	{
+		// for taps and pans, only handle if started within margin, otherwise don't receive so that the content may handle it
+		CGPoint tapPoint = [touch locationInView:self.view];
+		BOOL isHorizontal = [self orientation] == MPFlipViewControllerOrientationHorizontal;
+		CGFloat value = isHorizontal? tapPoint.x : tapPoint.y;
+		CGFloat dimension = isHorizontal? self.view.bounds.size.width : self.view.bounds.size.height;
+		return (value <= MARGIN || value >= dimension - MARGIN);
+	}
+	
 	return YES;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
+	// don't recognize simultaneously with scroll view gestures in content area
+	if ([[otherGestureRecognizer view] isKindOfClass:[UIScrollView class]])
+		return NO;
+	
 	// Allow simultanoues pan & swipe recognizers
 	return YES;
 }
@@ -419,7 +419,7 @@
 	[self setDirection:direction];
 	self.flipTransition = [[MPFlipTransition alloc] initWithSourceView:[sourceController view] 
 													   destinationView:[destinationController view] 
-															  duration:1.5 
+															  duration:0.5 
 																 style:((isForward? MPFlipStyleDefault : MPFlipStyleDirectionBackward) | (isVertical? MPFlipStyleOrientationVertical : MPFlipStyleDefault))
 													  completionAction:MPTransitionActionAddRemove];
 	
