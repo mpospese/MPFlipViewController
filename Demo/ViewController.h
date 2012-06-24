@@ -7,7 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "MPFlipViewController.h"
 
 @interface ViewController : UIViewController
+
+@property (strong, nonatomic) MPFlipViewController *flipViewController;
+@property (weak, nonatomic) IBOutlet UIView *frame;
+@property (weak, nonatomic) IBOutlet UIView *frameShadow;
+@property (weak, nonatomic) IBOutlet UIView *corkboard;
+@property (weak, nonatomic) IBOutlet UIStepper *stepper;
+- (IBAction)stepperValueChanged:(UIStepper *)sender;
 
 @end
