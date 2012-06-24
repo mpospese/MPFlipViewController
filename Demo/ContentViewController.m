@@ -129,6 +129,7 @@
 	CGFloat fitToHeightWidth = maxPictureHeight * (4./3);
 
 	BOOL fitToWidth = fitToHeightWidth > maxPictureWidth;
+	CGFloat contentGap = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone? 10 : 20;
 	
 	if (fitToWidth)
 	{
@@ -142,7 +143,7 @@
 		CGFloat pictureWidthWithFrame = maxPictureWidth + 2 * FRAME_MARGIN;
 		
 		self.imageFrame.frame = CGRectMake((frame.size.width - pictureWidthWithFrame) / 2, 0, pictureWidthWithFrame, pictureHeightWithFrame);
-		self.descriptionField.frame = CGRectMake((frame.size.width - pictureWidthWithFrame) / 2, pictureHeightWithFrame + 20, pictureWidthWithFrame, frame.size.height - (pictureHeightWithFrame + 20));
+		self.descriptionField.frame = CGRectMake((frame.size.width - pictureWidthWithFrame) / 2, pictureHeightWithFrame + contentGap, pictureWidthWithFrame, frame.size.height - (pictureHeightWithFrame + contentGap));
 	}
 	else
 	{
@@ -156,7 +157,7 @@
 		CGFloat pictureHeightWithFrame = maxPictureHeight + 2 * FRAME_MARGIN;
 		
 		self.imageFrame.frame = CGRectMake(0, (frame.size.height - pictureHeightWithFrame) / 2, pictureWidthWithFrame, pictureHeightWithFrame);
-		self.descriptionField.frame = CGRectMake(pictureWidthWithFrame + 20, (frame.size.height - pictureHeightWithFrame) / 2, frame.size.width - (pictureWidthWithFrame + 20), pictureHeightWithFrame);
+		self.descriptionField.frame = CGRectMake(pictureWidthWithFrame + contentGap, (frame.size.height - pictureHeightWithFrame) / 2, frame.size.width - (pictureWidthWithFrame + contentGap), pictureHeightWithFrame);
 	}
 	
 	// during rotation we'll get a separate callback and animate the change in shadowPath

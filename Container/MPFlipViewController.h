@@ -35,6 +35,7 @@ typedef NSInteger MPFlipViewControllerDirection; // For 'MPFlipViewControllerOri
 
 @property (nonatomic, readonly) MPFlipViewControllerOrientation orientation;
 @property (nonatomic, readonly) UIViewController *viewController;
+@property (nonatomic, readonly) NSArray *gestureRecognizers;
 @property (nonatomic, assign) id <MPFlipViewControllerDataSource> dataSource; // If nil, user gesture-driven navigation will be disabled.
 
 - (id)initWithOrientation:(MPFlipViewControllerOrientation)orientation;

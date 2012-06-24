@@ -17,6 +17,7 @@
 
 @property (nonatomic, assign) MPFlipViewControllerOrientation orientation;
 @property (nonatomic, strong) UIViewController *childViewController;
+@property (nonatomic, assign) NSArray *gestureRecognizers;
 @property (nonatomic, assign) BOOL gesturesAdded;
 @property (nonatomic, assign, getter = isAnimating) BOOL animating;
 @property (nonatomic, assign) MPFlipViewControllerDirection direction;
@@ -29,6 +30,7 @@
 
 @synthesize orientation = _orientation;
 @synthesize childViewController = _childViewController;
+@synthesize gestureRecognizers = _gestureRecognizers;
 @synthesize gesturesAdded = _gesturesAdded;
 @synthesize animating = _animating;
 @synthesize direction = _direction;
@@ -91,7 +93,9 @@
 	
 	UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
 	[self.view addGestureRecognizer:tap];
-		
+	
+	self.gestureRecognizers = [NSArray arrayWithObjects:left, right, tap, nil];
+
 	[self setGesturesAdded:YES];
 }
 

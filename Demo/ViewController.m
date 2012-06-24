@@ -12,6 +12,9 @@
 
 #define CONTENT_IDENTIFIER @"ContentViewController"
 #define FRAME_MARGIN	60
+#define MOVIE_MIN		1
+#define MOVIE_MAX		3
+
 @interface ViewController ()
 
 @property (assign, nonatomic) int previousIndex;
@@ -19,12 +22,10 @@
 @end
 
 @implementation ViewController
-@synthesize frame = _frame;
-@synthesize frameShadow = _frameShadow;
 
+@synthesize frame = _frame;
 @synthesize flipViewController = _flipViewController;
 @synthesize corkboard = _corkboard;
-@synthesize stepper = _stepper;
 @synthesize previousIndex = _previousIndex;
 
 - (void)viewDidLoad
@@ -32,7 +33,7 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
 	
-	self.previousIndex = (int)self.stepper.value;
+	self.previousIndex = MOVIE_MIN;
 	
 	// Configure the page view controller and add it as a child view controller.
 	self.flipViewController = [[MPFlipViewController alloc] initWithOrientation:MPFlipViewControllerOrientationHorizontal];
@@ -44,7 +45,6 @@
 	if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
 	{
 		pageViewRect = CGRectInset(pageViewRect, 20 + (hasFrame? FRAME_MARGIN : 0), 20 + (hasFrame? FRAME_MARGIN : 0));
-		pageViewRect.size.height -= self.stepper.bounds.size.height + (hasFrame? 0 : 10);
 		self.flipViewController.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
 	}
 	else
@@ -57,8 +57,11 @@
 	[self.view addSubview:self.flipViewController.view];
 	[self.flipViewController didMoveToParentViewController:self];
 	
-	[self.flipViewController setViewController:[self contentView] direction:MPFlipViewControllerDirectionForward animated:NO completion:nil];
-		
+	[self.flipViewController setViewController:[self contentViewWithIndex:self.previousIndex] direction:MPFlipViewControllerDirectionForward animated:NO completion:nil];
+	
+	// Add the page view controller's gesture recognizers to the book view controller's view so that the gestures are started more easily.
+	self.view.gestureRecognizers = self.flipViewController.gestureRecognizers;
+	
 	[self.corkboard setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"Pattern - Corkboard"]]];	
 	if (self.frame)
 	{
@@ -68,10 +71,8 @@
 
 - (void)viewDidUnload
 {
-    [self setStepper:nil];
 	[self setCorkboard:nil];
 	[self setFrame:nil];
-	[self setFrameShadow:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
 }
@@ -79,24 +80,6 @@
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
 	return YES;
-}
-
-- (IBAction)stepperValueChanged:(UIStepper *)sender {
-	// TODO: figure forward backward
-	sender.userInteractionEnabled = NO;
-	int previousIndex = self.previousIndex;
-	BOOL isForward = sender.value > previousIndex;
-	if ((sender.value == sender.minimumValue && previousIndex == sender.maximumValue) || (sender.value == sender.maximumValue && previousIndex == sender.minimumValue))
-		isForward = !isForward;
-	[self.flipViewController setViewController:[self contentView] direction:isForward? MPFlipViewControllerDirectionForward : MPFlipViewControllerDirectionReverse animated:YES completion:^(BOOL finished) {
-		sender.userInteractionEnabled = YES;
-		self.previousIndex = (int)self.stepper.value;
-	}];
-}
-
-- (ContentViewController *)contentView
-{
-	return [self contentViewWithIndex:(int)[self.stepper value]];
 }
 
 - (NSString *)storyboardName
@@ -121,22 +104,20 @@
 
 - (UIViewController *)flipViewController:(MPFlipViewController *)flipViewController viewControllerBeforeViewController:(UIViewController *)viewController
 {
-	int index = self.stepper.value;
+	int index = self.previousIndex;
 	index--;
-	if (index < self.stepper.minimumValue)
-		index = self.stepper.maximumValue;
-	self.stepper.value = index;
+	if (index < MOVIE_MIN)
+		index = MOVIE_MAX;
 	self.previousIndex = index;
 	return [self contentViewWithIndex:index];
 }
 
 - (UIViewController *)flipViewController:(MPFlipViewController *)flipViewController viewControllerAfterViewController:(UIViewController *)viewController
 {
-	int index = self.stepper.value;
+	int index = self.previousIndex;
 	index++;
-	if (index > self.stepper.maximumValue)
-		index = self.stepper.minimumValue;
-	self.stepper.value = index;
+	if (index > MOVIE_MAX)
+		index = MOVIE_MIN;
 	self.previousIndex = index;
 	return [self contentViewWithIndex:index];	
 }

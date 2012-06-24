@@ -20,19 +20,11 @@
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                             </view>
-                            <stepper opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" continuous="NO" autorepeat="NO" wraps="YES" value="1" minimumValue="1" maximumValue="3" id="lq3-dJ-cle">
-                                <rect key="frame" x="113" y="423" width="94" height="27"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <connections>
-                                    <action selector="stepperValueChanged:" destination="2" eventType="valueChanged" id="cB2-hu-mPv"/>
-                                </connections>
-                            </stepper>
                         </subviews>
                         <color key="backgroundColor" red="1" green="0.80000000000000004" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
                     <connections>
                         <outlet property="corkboard" destination="bpl-ZR-HhW" id="BMB-4K-GSg"/>
-                        <outlet property="stepper" destination="lq3-dJ-cle" id="cdB-zC-YgI"/>
                     </connections>
                 </viewController>
             </objects>
