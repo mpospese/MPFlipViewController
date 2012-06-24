@@ -31,7 +31,7 @@ typedef NSInteger MPFlipViewControllerDirection; // For 'MPFlipViewControllerOri
 
 @protocol MPFlipViewControllerDataSource;
 
-@interface MPFlipViewController : UIViewController
+@interface MPFlipViewController : UIViewController<UIGestureRecognizerDelegate>
 
 @property (nonatomic, readonly) MPFlipViewControllerOrientation orientation;
 @property (nonatomic, readonly) UIViewController *viewController;
