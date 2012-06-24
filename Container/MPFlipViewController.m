@@ -364,16 +364,24 @@
 	CGFloat dimensionValue = isVertical? self.view.frame.size.height : self.view.frame.size.width;
 	CGFloat difference = positionValue - startValue;
 	CGFloat halfWidth = fabsf(startValue - (dimensionValue / 2));
-	if ([self isRubberbanding])
-		halfWidth = MAX(halfWidth * 3, halfWidth + dimensionValue);
 	CGFloat progress = difference / halfWidth * (isForward? - 1 : 1);
 	if ([self isRubberbanding])
 	{
-		if (progress > 0.667)
-			progress = 0.667; // don't allow user to pull past 2/3 up when rubberbanding before 1st or after last page
+		if ((difference > 0) == isForward)
+			progress = 0;
+		else
+		{
+			// version of Hill equation (AKA Langmuir absorption equation), y = Kx^n / (1 + Kx^n)
+			// basically I want it to get increasingly more difficult to pull the page until we reach a maximum progress of 0.667
+			halfWidth += MAX(halfWidth * 2, halfWidth + (dimensionValue / 2));
+			CGFloat K = 1/(halfWidth * 3); // K & n can be adjusted to get different reaction curves
+			CGFloat n = 1.6667;
+			CGFloat temp = K * powf(fabs(difference), n);
+			progress = 0.667 * (temp/ (1 + temp)); // scale it to never get past 0.6667 (normally it is asymptotic to 1)
+		}
 	}
 	
-	//NSLog(@"Difference = %.2f, Half width = %.2f, rawProgress = %.4f", difference, halfWidth, progress);
+	NSLog(@"Difference = %.2f, Half width = %.2f, rawProgress = %.4f", difference, halfWidth, progress);
 	if (progress < 0)
 		progress = 0;
 	if (progress > 2)
