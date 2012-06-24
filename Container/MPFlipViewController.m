@@ -284,6 +284,20 @@
 				[self endFlip:!shouldFallBack completion:nil];
 			}];
         }
+		else if (![self isAnimating])
+		{
+			// we weren't panning (because touch didn't start near any margin) but test for swipe
+			if (velocityComponent < -SWIPE_ESCAPE_VELOCITY)
+			{
+				// Detected a swipe to the left/top
+				[self gotoNextPage];
+			}
+			else if (velocityComponent > SWIPE_ESCAPE_VELOCITY)
+			{
+				// Detected a swipe to the right/bottom
+				[self gotoPreviousPage];
+			}
+		}
 	}
 }
 
