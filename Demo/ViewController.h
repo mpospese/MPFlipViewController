@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "MPFlipViewController.h"
 
-@interface ViewController : UIViewController
+@interface ViewController : UIViewController<MPFlipViewControllerDataSource>
 
 @property (strong, nonatomic) MPFlipViewController *flipViewController;
 @property (weak, nonatomic) IBOutlet UIView *frame;
