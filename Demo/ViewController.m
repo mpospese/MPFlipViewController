@@ -120,7 +120,7 @@
 	int index = self.previousIndex;
 	index--;
 	if (index < MOVIE_MIN)
-		index = MOVIE_MAX;
+		return nil; // reached beginning, don't wrap
 	self.tentativeIndex = index;
 	return [self contentViewWithIndex:index];
 }
@@ -130,7 +130,7 @@
 	int index = self.previousIndex;
 	index++;
 	if (index > MOVIE_MAX)
-		index = MOVIE_MIN;
+		return nil; // reached end, don't wrap
 	self.tentativeIndex = index;
 	return [self contentViewWithIndex:index];	
 }
