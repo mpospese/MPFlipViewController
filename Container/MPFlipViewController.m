@@ -239,12 +239,32 @@
 	
 	if (state == UIGestureRecognizerStateEnded || state == UIGestureRecognizerStateCancelled)
 	{
+		CGPoint vel = [gestureRecognizer velocityInView:gestureRecognizer.view];
+		CGFloat velocityComponent = (self.orientation == MPFlipViewControllerOrientationHorizontal)? vel.x : vel.y;
+		CGFloat velocityMinorComponent = (self.orientation == MPFlipViewControllerOrientationHorizontal)? vel.y : vel.x;
+		// ignore the velocity if it's mostly in the off-axis direction (e.g. don't consider left velocity if swipe is mostly up or even diagonally up-left)
+		if (fabs(velocityMinorComponent) > fabs(velocityComponent))
+			velocityComponent = 0;
+		
+		//NSLog(@"Terminal velocity = %@", NSStringFromCGPoint(vel));
 		if ([self isPanning])
         {
 			// If moving slowly, let page fall either forward or back depending on where we were
 			BOOL shouldFallBack = [self isFlipFrontPage];
 			
-			// finishAnimation
+			// But, if user was swiping in an appropriate direction, go ahead and honor that
+			if (velocityComponent < -SWIPE_THRESHOLD)
+			{
+				// Detected a swipe to the left/top
+				shouldFallBack = self.direction != MPFlipViewControllerDirectionForward;
+			}
+			else if (velocityComponent > SWIPE_THRESHOLD)
+			{
+				// Detected a swipe to the right/bottom
+				shouldFallBack = self.direction == MPFlipViewControllerDirectionForward;
+			}				
+			
+			// finish Animation
 			CGFloat fromProgress = [self progressFromPosition:currentPosition];
 			if (shouldFallBack != [self isFlipFrontPage])
 			{
