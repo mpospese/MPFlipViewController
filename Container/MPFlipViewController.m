@@ -381,7 +381,7 @@
 		}
 	}
 	
-	NSLog(@"Difference = %.2f, Half width = %.2f, rawProgress = %.4f", difference, halfWidth, progress);
+	//NSLog(@"Difference = %.2f, Half width = %.2f, rawProgress = %.4f", difference, halfWidth, progress);
 	if (progress < 0)
 		progress = 0;
 	if (progress > 2)
