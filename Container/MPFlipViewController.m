@@ -26,6 +26,8 @@
 @property (nonatomic, assign, getter = isPanning) BOOL panning;
 @property (nonatomic, strong) MPFlipTransition *flipTransition;
 @property (assign, nonatomic) CGPoint panStart;
+@property (assign, nonatomic) CGPoint lastPanPosition;
+@property (assign, nonatomic) BOOL animationDidStartAsPan;
 @property (nonatomic, assign) MPFlipViewControllerDirection direction;
 
 @end
@@ -43,6 +45,8 @@
 @synthesize panning = _panning;
 @synthesize flipTransition = _flipTransition;
 @synthesize panStart = _panStart;
+@synthesize lastPanPosition = _lastPanPosition;
+@synthesize animationDidStartAsPan = _animationDidStartAsPan;
 @synthesize direction = _direction;
 @synthesize sourceController = _sourceController;
 @synthesize destinationController = _destinationController;
@@ -95,6 +99,18 @@
 - (BOOL)isFlipFrontPage
 {
 	return [[self flipTransition] stage] == MPFlipAnimationStage1;
+}
+
+- (void)setPanning:(BOOL)panning
+{
+	if (_panning != panning)
+	{
+		_panning = panning;
+		if (panning)
+		{
+			[self setAnimationDidStartAsPan:YES];
+		}
+	}
 }
 
 #pragma mark - private instance methods
@@ -230,15 +246,38 @@
 		
 		[self setPanning:YES];
 		[self setPanStart:currentPosition];
+		[self setLastPanPosition:currentPosition];
 	}
 	
 	if ([self isPanning] && state == UIGestureRecognizerStateChanged)
 	{
 		CGFloat progress = [self progressFromPosition:currentPosition];
-		if (progress < 1)
-			[self.flipTransition setStage:MPFlipAnimationStage1 progress:progress];
+		CGPoint vel = [gestureRecognizer velocityInView:gestureRecognizer.view];
+		//NSLog(@"Pan position changed, velocity = %@", NSStringFromCGPoint(vel));
+		CGFloat velocityComponent = (self.orientation == MPFlipViewControllerOrientationHorizontal)? vel.x : vel.y;
+		CGFloat velocityMinorComponent = (self.orientation == MPFlipViewControllerOrientationHorizontal)? vel.y : vel.x;
+		// ignore the velocity if it's mostly in the off-axis direction (e.g. don't consider left velocity if swipe is mostly up or even diagonally up-left)
+		if (fabs(velocityMinorComponent) > fabs(velocityComponent))
+			velocityComponent = 0;
+		
+		if (velocityComponent < -SWIPE_ESCAPE_VELOCITY || velocityComponent > SWIPE_ESCAPE_VELOCITY)
+		{
+			// Detected a swipe to the left
+			NSLog(@"Escape velocity reached.");
+			BOOL shouldFallBack = (velocityComponent < -SWIPE_ESCAPE_VELOCITY)? self.direction != MPFlipViewControllerDirectionForward : self.direction == MPFlipViewControllerDirectionForward;
+			[self setPanning:NO];
+			
+			// finish the remaining animation, but from the last touch position
+			[self finishPan:shouldFallBack];
+		}
 		else
-			[self.flipTransition setStage:MPFlipAnimationStage2 progress:progress - 1];
+		{
+			if (progress < 1)
+				[self.flipTransition setStage:MPFlipAnimationStage1 progress:progress];
+			else
+				[self.flipTransition setStage:MPFlipAnimationStage2 progress:progress - 1];
+			[self setLastPanPosition:currentPosition];
+		}
 	}
 	
 	if (state == UIGestureRecognizerStateEnded || state == UIGestureRecognizerStateCancelled)
@@ -269,24 +308,7 @@
 			}				
 			
 			// finish Animation
-			CGFloat fromProgress = [self progressFromPosition:currentPosition];
-			if (shouldFallBack != [self isFlipFrontPage])
-			{
-				// 2-stage animation (we're swiping either forward or back)
-				if (([self isFlipFrontPage] && fromProgress > 1) || (![self isFlipFrontPage] && fromProgress < 1))
-					fromProgress = 1;
-				if (fromProgress > 1)
-					fromProgress -= 1;
-			}
-			else
-			{
-				// 1-stage animation
-				if (!shouldFallBack)
-					fromProgress -= 1;
-			}
-			[[self flipTransition] animateFromProgress:fromProgress shouldFallBack:shouldFallBack completion:^(BOOL finished) {
-				[self endFlipAnimation:finished transitionCompleted:!shouldFallBack completion:nil];
-			}];
+			[self finishPan:shouldFallBack];
         }
 		else if (![self isAnimating])
 		{
@@ -347,6 +369,29 @@
 	return progress;
 }
 
+- (void)finishPan:(BOOL)shouldFallBack
+{
+	// finishAnimation
+	CGFloat fromProgress = [self progressFromPosition:[self lastPanPosition]];
+	if (shouldFallBack != [self isFlipFrontPage])
+	{
+		// 2-stage animation (we're swiping either forward or back)
+		if (([self isFlipFrontPage] && fromProgress > 1) || (![self isFlipFrontPage] && fromProgress < 1))
+			fromProgress = 1;
+		if (fromProgress > 1)
+			fromProgress -= 1;
+	}
+	else
+	{
+		// 1-stage animation
+		if (!shouldFallBack)
+			fromProgress -= 1;
+	}
+	[[self flipTransition] animateFromProgress:fromProgress shouldFallBack:shouldFallBack completion:^(BOOL finished) {
+		[self endFlipAnimation:finished transitionCompleted:!shouldFallBack completion:nil];
+	}];
+}
+
 - (BOOL)startFlipWithDirection:(MPFlipViewControllerDirection)direction
 {
 	if (![self dataSource])
@@ -386,10 +431,11 @@
 
 - (void)endFlipAnimation:(BOOL)animationFinished transitionCompleted:(BOOL)transitionCompleted completion:(void (^)(BOOL finished))completion
 {
-	BOOL didStartAsPan = [self isPanning];
+	BOOL didStartAsPan = [self animationDidStartAsPan];
 	// clear some flags
 	[self setFlipTransition:nil];
 	[self setPanning:NO];
+	[self setAnimationDidStartAsPan:NO];
 	
 	if (transitionCompleted)
 	{
