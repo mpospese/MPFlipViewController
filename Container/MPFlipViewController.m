@@ -492,7 +492,14 @@
 	
 	UIViewController *previousController = [[self dataSource] flipViewController:self viewControllerBeforeViewController:[self viewController]];
 	if (!previousController)
+	{
+		[self setRubberbanding:YES];
+		[self startFlipToViewController:nil fromViewController:self.childViewController withDirection:MPFlipViewControllerDirectionReverse];
+		[self.flipTransition performRubberband:^(BOOL finished) {
+			[self endFlipAnimation:finished transitionCompleted:NO completion:nil];
+		}];
 		return;
+	}
 	
 	[self setGestureDriven:YES];
 	[self setViewController:previousController direction:MPFlipViewControllerDirectionReverse animated:YES completion:nil];
@@ -505,7 +512,14 @@
 	
 	UIViewController *nextController = [[self dataSource] flipViewController:self viewControllerAfterViewController:[self viewController]];
 	if (!nextController)
+	{
+		[self setRubberbanding:YES];
+		[self startFlipToViewController:nil fromViewController:self.childViewController withDirection:MPFlipViewControllerDirectionForward];
+		[self.flipTransition performRubberband:^(BOOL finished) {
+			[self endFlipAnimation:finished transitionCompleted:NO completion:nil];
+		}];
 		return;
+	}
 	
 	[self setGestureDriven:YES];
 	[self setViewController:nextController direction:MPFlipViewControllerDirectionForward animated:YES completion:nil];	
