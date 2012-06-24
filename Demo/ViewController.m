@@ -38,7 +38,7 @@
 	self.previousIndex = MOVIE_MIN;
 	
 	// Configure the page view controller and add it as a child view controller.
-	self.flipViewController = [[MPFlipViewController alloc] initWithOrientation:MPFlipViewControllerOrientationVertical];
+	self.flipViewController = [[MPFlipViewController alloc] initWithOrientation:MPFlipViewControllerOrientationHorizontal];
 	self.flipViewController.delegate = self;
 	self.flipViewController.dataSource = self;
 	
