@@ -364,6 +364,8 @@
 	CGFloat dimensionValue = isVertical? self.view.frame.size.height : self.view.frame.size.width;
 	CGFloat difference = positionValue - startValue;
 	CGFloat halfWidth = fabsf(startValue - (dimensionValue / 2));
+	if ([self isRubberbanding])
+		halfWidth = MAX(halfWidth * 3, halfWidth + dimensionValue);
 	CGFloat progress = difference / halfWidth * (isForward? - 1 : 1);
 	if ([self isRubberbanding])
 	{
