@@ -28,6 +28,10 @@
 		4D09C3D4157E16DB000CFE0F /* MPFlipTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D09C3CE157E16DB000CFE0F /* MPFlipTransition.m */; };
 		4D09C3D5157E16DB000CFE0F /* MPTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D09C3CF157E16DB000CFE0F /* MPTransition.m */; };
 		4D09C3D9157E38ED000CFE0F /* ContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D09C3D8157E38ED000CFE0F /* ContentViewController.m */; };
+		4D16417215989D76004FD2DC /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 4D16417115989D76004FD2DC /* Icon.png */; };
+		4D16417515989D7B004FD2DC /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4D16417415989D7B004FD2DC /* Icon@2x.png */; };
+		4D16417715989D84004FD2DC /* Icon-72.png in Resources */ = {isa = PBXBuildFile; fileRef = 4D16417615989D84004FD2DC /* Icon-72.png */; };
+		4D16417915989D88004FD2DC /* Icon-72@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4D16417815989D88004FD2DC /* Icon-72@2x.png */; };
 		4D8A25CD1595CFC000789655 /* Pattern - Aged Paper.png in Resources */ = {isa = PBXBuildFile; fileRef = 4D8A25CA1595CFC000789655 /* Pattern - Aged Paper.png */; };
 		4D8A25CE1595CFC000789655 /* Pattern - Apple Wood.png in Resources */ = {isa = PBXBuildFile; fileRef = 4D8A25CB1595CFC000789655 /* Pattern - Apple Wood.png */; };
 		4D8A25CF1595CFC000789655 /* Pattern - Corkboard.png in Resources */ = {isa = PBXBuildFile; fileRef = 4D8A25CC1595CFC000789655 /* Pattern - Corkboard.png */; };
@@ -69,6 +73,10 @@
 		4D09C3D3157E16DB000CFE0F /* MPTransitionEnumerations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MPTransitionEnumerations.h; sourceTree = "<group>"; };
 		4D09C3D7157E38ED000CFE0F /* ContentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContentViewController.h; sourceTree = "<group>"; };
 		4D09C3D8157E38ED000CFE0F /* ContentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContentViewController.m; sourceTree = "<group>"; };
+		4D16417115989D76004FD2DC /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
+		4D16417415989D7B004FD2DC /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon@2x.png"; sourceTree = "<group>"; };
+		4D16417615989D84004FD2DC /* Icon-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-72.png"; sourceTree = "<group>"; };
+		4D16417815989D88004FD2DC /* Icon-72@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-72@2x.png"; sourceTree = "<group>"; };
 		4D8A25CA1595CFC000789655 /* Pattern - Aged Paper.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Pattern - Aged Paper.png"; sourceTree = "<group>"; };
 		4D8A25CB1595CFC000789655 /* Pattern - Apple Wood.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Pattern - Apple Wood.png"; sourceTree = "<group>"; };
 		4D8A25CC1595CFC000789655 /* Pattern - Corkboard.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Pattern - Corkboard.png"; sourceTree = "<group>"; };
@@ -92,6 +100,10 @@
 		4D09C372157CC025000CFE0F = {
 			isa = PBXGroup;
 			children = (
+				4D16417815989D88004FD2DC /* Icon-72@2x.png */,
+				4D16417615989D84004FD2DC /* Icon-72.png */,
+				4D16417415989D7B004FD2DC /* Icon@2x.png */,
+				4D16417115989D76004FD2DC /* Icon.png */,
 				4D09C3AA157CC496000CFE0F /* README.md */,
 				4D09C3A9157CC496000CFE0F /* Source Code License.rtf */,
 				4D09C387157CC025000CFE0F /* Demo */,
@@ -244,6 +256,10 @@
 				4D8A25CD1595CFC000789655 /* Pattern - Aged Paper.png in Resources */,
 				4D8A25CE1595CFC000789655 /* Pattern - Apple Wood.png in Resources */,
 				4D8A25CF1595CFC000789655 /* Pattern - Corkboard.png in Resources */,
+				4D16417215989D76004FD2DC /* Icon.png in Resources */,
+				4D16417515989D7B004FD2DC /* Icon@2x.png in Resources */,
+				4D16417715989D84004FD2DC /* Icon-72.png in Resources */,
+				4D16417915989D88004FD2DC /* Icon-72@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
