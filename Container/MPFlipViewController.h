@@ -45,9 +45,15 @@ typedef NSInteger MPFlipViewControllerDirection; // For 'MPFlipViewControllerOri
 
 @end
 
-@protocol MPFlipViewControllerDelegate
+@protocol MPFlipViewControllerDelegate<NSObject>
 
+@optional
+// handle this to be notified when page flip animations have finished
 - (void)flipViewController:(MPFlipViewController *)flipViewController didFinishAnimating:(BOOL)finished previousViewController:(UIViewController *)previousViewController transitionCompleted:(BOOL)completed;
+
+// handle this and return the desired orientation (horizontal or vertical) for the new interface orientation
+// called when MPFlipViewController handles willRotateToInterfaceOrientation:duration: callback
+- (MPFlipViewControllerOrientation)flipViewController:(MPFlipViewController *)flipViewController orientationForInterfaceOrientation:(UIInterfaceOrientation)orientation;
 
 @end
 

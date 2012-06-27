@@ -38,7 +38,7 @@
 	self.previousIndex = MOVIE_MIN;
 	
 	// Configure the page view controller and add it as a child view controller.
-	self.flipViewController = [[MPFlipViewController alloc] initWithOrientation:MPFlipViewControllerOrientationHorizontal];
+	self.flipViewController = [[MPFlipViewController alloc] initWithOrientation:[self flipViewController:nil orientationForInterfaceOrientation:[UIApplication sharedApplication].statusBarOrientation]];
 	self.flipViewController.delegate = self;
 	self.flipViewController.dataSource = self;
 	
@@ -111,6 +111,14 @@
 	{
 		self.previousIndex = self.tentativeIndex;
 	}
+}
+
+- (MPFlipViewControllerOrientation)flipViewController:(MPFlipViewController *)flipViewController orientationForInterfaceOrientation:(UIInterfaceOrientation)orientation
+{
+	if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+		return UIInterfaceOrientationIsPortrait(orientation)? MPFlipViewControllerOrientationVertical : MPFlipViewControllerOrientationHorizontal;
+	else
+		return MPFlipViewControllerOrientationHorizontal;
 }
 
 #pragma mark - MPFlipViewControllerDataSource protocol

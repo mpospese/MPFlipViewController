@@ -82,9 +82,19 @@
     // Release any retained subviews of the main view.
 }
 
+#pragma mark - rotation callbacks
+
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
-    return ![self isAnimating];
+	return ![self isAnimating];
+}
+
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+	if ([[self delegate] respondsToSelector:@selector(flipViewController:orientationForInterfaceOrientation:)])
+		[self setOrientation:[[self delegate] flipViewController:self orientationForInterfaceOrientation:toInterfaceOrientation]];
+	
+	[super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
 
 #pragma mark - Properties
@@ -485,7 +495,10 @@
 	{
 		// notify delegate that we finished the page turn animation, indicating whether the user actually completed the page turn
 		// or not, and also whether the animation ran to completion or not
-		[[self delegate] flipViewController:self didFinishAnimating:animationFinished previousViewController:self.sourceController transitionCompleted:transitionCompleted];
+		if ([[self delegate] respondsToSelector:@selector(flipViewController:didFinishAnimating:previousViewController:transitionCompleted:)])
+		{
+			[[self delegate] flipViewController:self didFinishAnimating:animationFinished previousViewController:self.sourceController transitionCompleted:transitionCompleted];
+		}
 	}
 	
 	// clear remaining flags
