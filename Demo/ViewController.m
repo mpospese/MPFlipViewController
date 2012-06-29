@@ -82,7 +82,10 @@
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
-	return YES;
+	if ([self flipViewController])
+		return [[self flipViewController] shouldAutorotateToInterfaceOrientation:interfaceOrientation];
+	else
+		return YES;
 }
 
 - (NSString *)storyboardName
