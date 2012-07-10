@@ -8,11 +8,12 @@ This is the app to accompany my talk ["Implementing Custom Container View Contro
 Full details will probably have to wait until the following week.  For now, I'll just put up this teaser screenshot.  
     
 ![iPhone screenshot](http://markpospesel.files.wordpress.com/2012/06/iphone_screenshot2x.png)
-
+  
 Requirements
----------
-* Xcode 4.3
-* iOS 5
+------------
+* Xcode 4.3 or higher
+* LLVM compiler
+* iOS 5 or higher
 * ARC
 
 How To Use
