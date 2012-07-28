@@ -32,6 +32,8 @@ static inline double mp_radians (double degrees) {return degrees * M_PI/180;}
 @property (strong, nonatomic) CALayer *layerFacingShadow;
 @property (strong, nonatomic) CALayer *layerRevealShadow;
 @property (assign, nonatomic) MPFlipAnimationStage stage;
+@property (weak, nonatomic) UIView *actingSource;
+@property (assign, nonatomic) CGRect sourceFrame;
 
 @end
 
@@ -52,6 +54,7 @@ static inline double mp_radians (double degrees) {return degrees * M_PI/180;}
 @synthesize layerFacingShadow = _layerFacingShadow;
 @synthesize layerRevealShadow = _layerRevealShadow;
 @synthesize stage = _stage;
+@synthesize actingSource = _actingSource;
 
 @synthesize style = _style;
 @synthesize coveredPageShadowOpacity = _coveredPageShadowOpacity;
@@ -73,7 +76,7 @@ static inline double mp_radians (double degrees) {return degrees * M_PI/180;}
 		_layersBuilt = NO;
 		_stage = MPFlipAnimationStage1;
 		_rubberbandMaximumProgress = DEFAULT_RUBBERBAND_MAX_PROGRESS;
-		_shouldRenderAllViews = NO;
+		_shouldRenderAllViews = YES;
 	}
 	
 	return self;
@@ -146,7 +149,12 @@ static inline double mp_radians (double degrees) {return degrees * M_PI/180;}
 
 - (void)buildLayers
 {
-	if ([self wereLayersBuilt])
+	[self buildLayers:NO];
+}
+
+- (void)buildLayers:(BOOL)isResizing
+{
+	if (!isResizing && [self wereLayersBuilt])
 		return;
 
 	BOOL forwards = ([self style] & MPFlipStyleDirectionMask) != MPFlipStyleDirectionBackward;
@@ -216,14 +224,20 @@ static inline double mp_radians (double degrees) {return degrees * M_PI/180;}
 	// reveal Page = the other half of the next view (doesn't move, gets revealed by front page during 1st half)
 	UIImage *pageFrontImage = [MPAnimation renderImageFromView:self.sourceView withRect:forwards? lowerRect : upperRect transparentInsets:insets];
 	
-	UIView *actingSource = [self sourceView]; // the view that is already part of the view hierarchy
-	UIView *containerView = [actingSource superview];
+	self.actingSource = [self sourceView]; // the view that is already part of the view hierarchy
+	UIView *containerView = [self.actingSource superview];
 	if (!containerView && !isRubberbanding)
 	{
 		// in case of dismissal, it is actually the destination view since we had to add it
 		// in order to get it to render correctly
-		actingSource = [self destinationView];
-		containerView = [actingSource superview];
+		self.actingSource = [self destinationView];
+		containerView = [self.actingSource superview];
+	}
+	
+	if (!isResizing)
+	{
+		[self.actingSource addObserver:self forKeyPath:@"frame" options:NSKeyValueObservingOptionNew context:nil];
+		self.sourceFrame = [self.actingSource frame];
 	}
 	
 	BOOL isDestinationViewAbove = !isRubberbanding;
@@ -235,7 +249,7 @@ static inline double mp_radians (double degrees) {return degrees * M_PI/180;}
 		case MPTransitionActionAddRemove:
 			if (!isModal && !isRubberbanding)
 				[self.destinationView setFrame:[self.sourceView frame]];
-			if (!isRubberbanding)
+			if (!isRubberbanding && !isResizing)
 				[containerView addSubview:self.destinationView];
 			break;
 			
@@ -282,15 +296,19 @@ static inline double mp_radians (double degrees) {return degrees * M_PI/180;}
 	CGFloat upperHeight = roundf(height * scale) / scale; // round heights to integer for odd height
 	
 	// view to hold all our sublayers
-	CGRect mainRect = [containerView convertRect:self.rect fromView:actingSource];
+	CGRect mainRect = [containerView convertRect:self.rect fromView:self.actingSource];
 	CGPoint center = (CGPoint){CGRectGetMidX(mainRect), CGRectGetMidY(mainRect)};
 	if (isModal)
-		mainRect = [actingSource convertRect:mainRect fromView:nil];
-	self.animationView = [[UIView alloc] initWithFrame:mainRect];
+		mainRect = [self.actingSource convertRect:mainRect fromView:nil];
+	if (!isResizing)
+		self.animationView = [[UIView alloc] initWithFrame:mainRect];
+	else
+		self.animationView.frame = mainRect;
 	self.animationView.backgroundColor = [UIColor clearColor];
-	self.animationView.transform = actingSource.transform;
+	self.animationView.transform = self.actingSource.transform;
 	self.animationView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin;
-	[containerView addSubview:self.animationView];
+	if (!isResizing)
+		[containerView addSubview:self.animationView];
 	if (isModal)
 	{
 		[self.animationView.layer setPosition:center];
@@ -298,92 +316,112 @@ static inline double mp_radians (double degrees) {return degrees * M_PI/180;}
 	
 	if (!isRubberbanding)
 	{
-		self.layerReveal = [CALayer layer];
-		self.layerReveal.frame = (CGRect){CGPointZero, drawReveal? pageRevealImage.size : forwards? destLowerRect.size : destUpperRect.size};
+		if (!isResizing)
+			self.layerReveal = [CALayer layer];
+		self.layerReveal.bounds = (CGRect){CGPointZero, drawReveal? pageRevealImage.size : forwards? destLowerRect.size : destUpperRect.size};
 		self.layerReveal.anchorPoint = CGPointMake(vertical? 0.5 : forwards? 0 : 1, vertical? forwards? 0 : 1 : 0.5);
 		self.layerReveal.position = CGPointMake(vertical? width/2 : upperHeight, vertical? upperHeight : width/2);
 		if (drawReveal)
 			[self.layerReveal setContents:(id)[pageRevealImage CGImage]];
-		[self.animationView.layer addSublayer:self.layerReveal];
+		if (!isResizing)
+			[self.animationView.layer addSublayer:self.layerReveal];
 	}
 	
-	self.layerFacing = [CALayer layer];
-	self.layerFacing.frame = (CGRect){CGPointZero, drawFacing? pageFacingImage.size : forwards? upperRect.size : lowerRect.size};
+	if (!isResizing)
+		self.layerFacing = [CALayer layer];
+	self.layerFacing.bounds = (CGRect){CGPointZero, drawFacing? pageFacingImage.size : forwards? upperRect.size : lowerRect.size};
 	self.layerFacing.anchorPoint = CGPointMake(vertical? 0.5 : forwards? 1 : 0, vertical? forwards? 1 : 0 : 0.5);
 	self.layerFacing.position = CGPointMake(vertical? width/2 : upperHeight, vertical? upperHeight : width/2);
 	if (drawFacing)
 		[self.layerFacing setContents:(id)[pageFacingImage CGImage]];
-	[self.animationView.layer addSublayer:self.layerFacing];
+	if (!isResizing)
+		[self.animationView.layer addSublayer:self.layerFacing];
 	
 	if (![self shouldRenderAllViews])
 	{
-		self.revealLayerMask = [CAShapeLayer layer];
+		if (!isResizing)
+			self.revealLayerMask = [CAShapeLayer layer];
 		CGRect maskRect = (forwards == isDestinationViewAbove)? destLowerRect : destUpperRect;
 		self.revealLayerMask.path = [[UIBezierPath bezierPathWithRect:maskRect] CGPath];
 		UIView *viewToMask = isDestinationViewAbove? self.destinationView : self.sourceView;
 		[viewToMask.layer setMask:self.revealLayerMask];
 	}
 	
-	self.layerFront = [CALayer layer];
-	self.layerFront.frame = (CGRect){CGPointZero, pageFrontImage.size};
+	if (!isResizing)
+		self.layerFront = [CALayer layer];
+	self.layerFront.bounds = (CGRect){CGPointZero, pageFrontImage.size};
 	self.layerFront.anchorPoint = CGPointMake(vertical? 0.5 : forwards? 0 : 1, vertical? forwards? 0 : 1 : 0.5);
 	self.layerFront.position = CGPointMake(vertical? width/2 : upperHeight, vertical? upperHeight : width/2);
 	[self.layerFront setContents:(id)[pageFrontImage CGImage]];
-	[self.animationView.layer addSublayer:self.layerFront];
+	if (!isResizing)
+		[self.animationView.layer addSublayer:self.layerFront];
 	
 	if (!isRubberbanding)
 	{
-		self.layerBack = [CALayer layer];
-		self.layerBack.frame = (CGRect){CGPointZero, pageBackImage.size};
+		if (!isResizing)
+			self.layerBack = [CALayer layer];
+		self.layerBack.bounds = (CGRect){CGPointZero, pageBackImage.size};
 		self.layerBack.anchorPoint = CGPointMake(vertical? 0.5 : forwards? 1 : 0, vertical? forwards? 1 : 0 : 0.5);
 		self.layerBack.position = CGPointMake(vertical? width/2 : upperHeight, vertical? upperHeight : width/2);
 		[self.layerBack setContents:(id)[pageBackImage CGImage]];
 	}
 	
 	// Create shadow layers
-	self.layerFrontShadow = [CAGradientLayer layer];
-	[self.layerFront addSublayer:self.layerFrontShadow];
+	if (!isResizing)
+	{
+		self.layerFrontShadow = [CAGradientLayer layer];
+		[self.layerFront addSublayer:self.layerFrontShadow];
+		self.layerFrontShadow.opacity = 0.0;
+		if (forwards)
+			self.layerFrontShadow.colors = [NSArray arrayWithObjects:(id)[[[self flipShadowColor] colorWithAlphaComponent:0.5] CGColor], (id)[self flipShadowColor].CGColor, (id)[[UIColor clearColor] CGColor], nil];
+		else
+			self.layerFrontShadow.colors = [NSArray arrayWithObjects:(id)[[UIColor clearColor] CGColor], (id)[self flipShadowColor].CGColor, (id)[[[self flipShadowColor] colorWithAlphaComponent:0.5] CGColor], nil];
+		self.layerFrontShadow.startPoint = CGPointMake(vertical? 0.5 : forwards? 0 : 0.5, vertical? forwards? 0 : 0.5 : 0.5);
+		self.layerFrontShadow.endPoint = CGPointMake(vertical? 0.5 : forwards? 0.5 : 1, vertical? forwards? 0.5 : 1 : 0.5);
+		self.layerFrontShadow.locations = [NSArray arrayWithObjects:[NSNumber numberWithDouble:0], [NSNumber numberWithDouble:forwards? 0.1 : 0.9], [NSNumber numberWithDouble:1], nil];
+	}
 	self.layerFrontShadow.frame = CGRectInset(self.layerFront.bounds, insets.left, insets.top);
-	self.layerFrontShadow.opacity = 0.0;
-	if (forwards)
-		self.layerFrontShadow.colors = [NSArray arrayWithObjects:(id)[[[self flipShadowColor] colorWithAlphaComponent:0.5] CGColor], (id)[self flipShadowColor].CGColor, (id)[[UIColor clearColor] CGColor], nil];
-	else
-		self.layerFrontShadow.colors = [NSArray arrayWithObjects:(id)[[UIColor clearColor] CGColor], (id)[self flipShadowColor].CGColor, (id)[[[self flipShadowColor] colorWithAlphaComponent:0.5] CGColor], nil];
-	self.layerFrontShadow.startPoint = CGPointMake(vertical? 0.5 : forwards? 0 : 0.5, vertical? forwards? 0 : 0.5 : 0.5);
-	self.layerFrontShadow.endPoint = CGPointMake(vertical? 0.5 : forwards? 0.5 : 1, vertical? forwards? 0.5 : 1 : 0.5);
-	self.layerFrontShadow.locations = [NSArray arrayWithObjects:[NSNumber numberWithDouble:0], [NSNumber numberWithDouble:forwards? 0.1 : 0.9], [NSNumber numberWithDouble:1], nil];
 	
 	if (!isRubberbanding)
 	{
-		self.layerBackShadow = [CAGradientLayer layer];
-		[self.layerBack addSublayer:self.layerBackShadow];
+		if (!isResizing)
+		{
+			self.layerBackShadow = [CAGradientLayer layer];
+			[self.layerBack addSublayer:self.layerBackShadow];
+			self.layerBackShadow.opacity = [self flippingPageShadowOpacity];
+			if (forwards)
+				self.layerBackShadow.colors = [NSArray arrayWithObjects:(id)[[UIColor clearColor] CGColor], (id)[self flipShadowColor].CGColor, (id)[[[self flipShadowColor] colorWithAlphaComponent:0.5] CGColor], nil];
+			else
+				self.layerBackShadow.colors = [NSArray arrayWithObjects:(id)[[[self flipShadowColor] colorWithAlphaComponent:0.5] CGColor], (id)[self flipShadowColor].CGColor, (id)[[UIColor clearColor] CGColor], nil];
+			self.layerBackShadow.startPoint = CGPointMake(vertical? 0.5 : forwards? 0.5 : 0, vertical? forwards? 0.5 : 0 : 0.5);
+			self.layerBackShadow.endPoint = CGPointMake(vertical? 0.5 : forwards? 1 : 0.5, vertical? forwards? 1 : 0.5 : 0.5);
+			self.layerBackShadow.locations = [NSArray arrayWithObjects:[NSNumber numberWithDouble:0], [NSNumber numberWithDouble:forwards? 0.9 : 0.1], [NSNumber numberWithDouble:1], nil];
+		}
 		self.layerBackShadow.frame = CGRectInset(self.layerBack.bounds, insets.left, insets.top);
-		self.layerBackShadow.opacity = [self flippingPageShadowOpacity];
-		if (forwards)
-			self.layerBackShadow.colors = [NSArray arrayWithObjects:(id)[[UIColor clearColor] CGColor], (id)[self flipShadowColor].CGColor, (id)[[[self flipShadowColor] colorWithAlphaComponent:0.5] CGColor], nil];
-		else
-			self.layerBackShadow.colors = [NSArray arrayWithObjects:(id)[[[self flipShadowColor] colorWithAlphaComponent:0.5] CGColor], (id)[self flipShadowColor].CGColor, (id)[[UIColor clearColor] CGColor], nil];
-		self.layerBackShadow.startPoint = CGPointMake(vertical? 0.5 : forwards? 0.5 : 0, vertical? forwards? 0.5 : 0 : 0.5);
-		self.layerBackShadow.endPoint = CGPointMake(vertical? 0.5 : forwards? 1 : 0.5, vertical? forwards? 1 : 0.5 : 0.5);
-		self.layerBackShadow.locations = [NSArray arrayWithObjects:[NSNumber numberWithDouble:0], [NSNumber numberWithDouble:forwards? 0.9 : 0.1], [NSNumber numberWithDouble:1], nil];
 	}
 	
 	if (!inward)
 	{
 		if (!isRubberbanding)
 		{
-			self.layerRevealShadow = [CALayer layer];
-			[self.layerReveal addSublayer:self.layerRevealShadow];
+			if (!isResizing)
+			{
+				self.layerRevealShadow = [CALayer layer];
+				[self.layerReveal addSublayer:self.layerRevealShadow];
+				self.layerRevealShadow.backgroundColor = [self flipShadowColor].CGColor;
+				self.layerRevealShadow.opacity = [self coveredPageShadowOpacity];
+			}
 			self.layerRevealShadow.frame = self.layerReveal.bounds;
-			self.layerRevealShadow.backgroundColor = [self flipShadowColor].CGColor;
-			self.layerRevealShadow.opacity = [self coveredPageShadowOpacity];
 		}
 		
-		self.layerFacingShadow = [CALayer layer];
-		//[self.layerFacing addSublayer:self.layerFacingShadow]; // add later
+		if (!isResizing)
+		{
+			self.layerFacingShadow = [CALayer layer];
+			//[self.layerFacing addSublayer:self.layerFacingShadow]; // add later
+			self.layerFacingShadow.backgroundColor = [self flipShadowColor].CGColor;
+			self.layerFacingShadow.opacity = 0.0;
+		}
 		self.layerFacingShadow.frame = self.layerFacing.bounds;
-		self.layerFacingShadow.backgroundColor = [self flipShadowColor].CGColor;
-		self.layerFacingShadow.opacity = 0.0;
 	}
 	
 	// Perspective is best proportional to the height of the pieces being folded away, rather than a fixed value
@@ -423,6 +461,9 @@ static inline double mp_radians (double degrees) {return degrees * M_PI/180;}
 	self.layerFacingShadow = nil;
 	self.layerRevealShadow = nil;
 	self.revealLayerMask = nil;
+	
+	[self.actingSource removeObserver:self forKeyPath:@"frame"];
+	self.actingSource = nil;
 	
 	[self setLayersBuilt:NO];
 }
@@ -774,6 +815,21 @@ static inline double mp_radians (double degrees) {return degrees * M_PI/180;}
 				if ([self wasDestinationViewShown])
 					[self.destinationView setHidden:YES];
 				break;
+		}
+	}
+}
+
+#pragma mark - KVO
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if ([keyPath isEqualToString:@"frame"])
+	{
+		if (!CGRectEqualToRect(self.sourceFrame, [self.actingSource frame]))
+		{
+			self.rect = self.sourceView.bounds;
+			[self buildLayers:YES];
+			self.sourceFrame = [self.actingSource frame];
 		}
 	}
 }
