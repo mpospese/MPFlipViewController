@@ -18,7 +18,7 @@ API
 ----------
 The API is simple and modeled after UIKit's UIPageViewController.  There is a Data Source protocol (to provide previous and next controllers) and a Delegate protocol.  
   
-More details can be found in this [blog post](http://markpospesel.com/2012/07/28/mpflipviewcontroller-a-page-flipping-container-controller/).  See MPFlipViewController.h for full details.
+More details can be found in this [blog post](http://markpospesel.com/2012/07/28/mpflipviewcontroller/).  See MPFlipViewController.h for full details.
   
 How To Use
 ---------
