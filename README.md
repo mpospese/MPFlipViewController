@@ -3,11 +3,9 @@ MPFlipViewController
 
 A custom container view controller following the iOS 5 containment API that navigates between child view controllers via touch gestures and page-flip animations
   
-This is the app to accompany my talk ["Implementing Custom Container View Controllers"](http://cocoaconf.com/conference/sessionDetails/82?confId=4) at [CocoaConf DC](http://cocoaconf.com/dc-2012/home) this Friday at 5 p.m.  
-  
-Full details will probably have to wait until the following week.  For now, I'll just put up this teaser screenshot.  
-    
-![iPhone screenshot](http://markpospesel.files.wordpress.com/2012/06/iphone_screenshot2x.png)
+This is the app to accompany my talk ["Implementing Custom Container View Controllers"](http://cocoaconf.com/conference/sessionDetails/82?confId=4) I presented at [CocoaConf DC 2012](http://cocoaconf.com/dc-2012/home).  
+   
+![iPhone screenshot](http://markpospesel.files.wordpress.com/2012/07/fliphorizontal2x.png)
   
 Requirements
 ------------
@@ -16,6 +14,10 @@ Requirements
 * iOS 5 or higher
 * ARC
 
+API
+----------
+The API is simple and modeled after UIKit's UIPageViewController.  There is a Data Source protocol (to provide previous and next controllers) and a Delegate protocol.  See MPFlipViewController.h for full details.
+  
 How To Use
 ---------
 Build and run the included demo app, and see how it works.  The controller files are in the "Controller" directory and the demo app is in the "Demo" directory.
