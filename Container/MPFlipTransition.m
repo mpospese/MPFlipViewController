@@ -55,6 +55,7 @@ static inline double mp_radians (double degrees) {return degrees * M_PI/180;}
 @synthesize layerRevealShadow = _layerRevealShadow;
 @synthesize stage = _stage;
 @synthesize actingSource = _actingSource;
+@synthesize sourceFrame = _sourceFrame;
 
 @synthesize style = _style;
 @synthesize coveredPageShadowOpacity = _coveredPageShadowOpacity;
