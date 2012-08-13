@@ -33,14 +33,16 @@ typedef NSInteger MPFlipViewControllerDirection; // For 'MPFlipViewControllerOri
 
 @interface MPFlipViewController : UIViewController<UIGestureRecognizerDelegate>
 
-@property (nonatomic, readonly) MPFlipViewControllerOrientation orientation;
+@property (nonatomic, readonly) MPFlipViewControllerOrientation orientation; // horizontal or vertical
 @property (nonatomic, readonly) UIViewController *viewController;
 @property (nonatomic, readonly) NSArray *gestureRecognizers;
 @property (nonatomic, assign) id <MPFlipViewControllerDelegate> delegate;
 @property (nonatomic, assign) id <MPFlipViewControllerDataSource> dataSource; // If nil, user gesture-driven navigation will be disabled.
 
+// designated initializer
 - (id)initWithOrientation:(MPFlipViewControllerOrientation)orientation;
 
+// flip to a new page
 - (void)setViewController:(UIViewController *)viewController direction:(MPFlipViewControllerDirection)direction animated:(BOOL)animated completion:(void (^)(BOOL finished))completion;
 
 @end
@@ -60,7 +62,7 @@ typedef NSInteger MPFlipViewControllerDirection; // For 'MPFlipViewControllerOri
 @protocol MPFlipViewControllerDataSource 
 @required
 
-- (UIViewController *)flipViewController:(MPFlipViewController *)flipViewController viewControllerBeforeViewController:(UIViewController *)viewController;
-- (UIViewController *)flipViewController:(MPFlipViewController *)flipViewController viewControllerAfterViewController:(UIViewController *)viewController;
+- (UIViewController *)flipViewController:(MPFlipViewController *)flipViewController viewControllerBeforeViewController:(UIViewController *)viewController; // get previous page, or nil for none
+- (UIViewController *)flipViewController:(MPFlipViewController *)flipViewController viewControllerAfterViewController:(UIViewController *)viewController; // get next page, or nil for none
 
 @end
