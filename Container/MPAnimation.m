@@ -29,7 +29,7 @@
 	CGContextTranslateCTM(context, -frame.origin.x, -frame.origin.y);
     
     // Render the view as image
-    [view.layer renderInContext:UIGraphicsGetCurrentContext()];
+    [view.layer renderInContext:context];
     
     // Fetch the image   
     UIImage *renderedImage = UIGraphicsGetImageFromCurrentImageContext();
@@ -56,7 +56,7 @@
 	CGContextTranslateCTM(context, -frame.origin.x + insets.left, -frame.origin.y + insets.top);
     
     // Render the view as image
-    [view.layer renderInContext:UIGraphicsGetCurrentContext()];
+    [view.layer renderInContext:context];
     
     // Fetch the image   
     UIImage *renderedImage = UIGraphicsGetImageFromCurrentImageContext();
