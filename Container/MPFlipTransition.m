@@ -338,7 +338,7 @@ static inline double mp_radians (double degrees) {return degrees * M_PI/180;}
 	if (!isResizing)
 		[self.animationView.layer addSublayer:self.layerFacing];
 	
-	if (![self shouldRenderAllViews])
+	if (![self shouldRenderAllViews] || isRubberbanding)
 	{
 		if (!isResizing)
 			self.revealLayerMask = [CAShapeLayer layer];
