@@ -66,3 +66,17 @@ typedef NSInteger MPFlipViewControllerDirection; // For 'MPFlipViewControllerOri
 - (UIViewController *)flipViewController:(MPFlipViewController *)flipViewController viewControllerAfterViewController:(UIViewController *)viewController; // get next page, or nil for none
 
 @end
+
+// Notifications
+// All of the following notifications have an `object' that is the sending MPFipViewController.
+
+// The following notification has a userInfo key "MPAnimationFinished" with an NSNumber (bool, YES/NO) value,
+// an "MPTransitionCompleted" key with an NSNumber (bool, YES/NO) value,
+// an "MPPreviousController" key with a UIViewController value, and
+// an "MPNewController" key with a UIViewController value
+#define MPAnimationFinishedKey @"MPAnimationFinished"
+#define MPTransitionCompletedKey @"MPTransitionCompleted"
+#define MPPreviousControllerKey @"MPPreviousController"
+#define MPNewControllerKey @"MPNewController"
+extern NSString *MPFlipViewControllerDidFinishAnimatingNotification;
+

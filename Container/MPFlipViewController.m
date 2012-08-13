@@ -13,6 +13,9 @@
 #define SWIPE_THRESHOLD	125.0f
 #define SWIPE_ESCAPE_VELOCITY 650.0f
 
+// Notifications
+NSString *MPFlipViewControllerDidFinishAnimatingNotification = @"com.markpospesel.MPFlipViewControllerDidFinishAnimatingNotification";
+
 @interface MPFlipViewController ()
 
 @property (nonatomic, assign) MPFlipViewControllerOrientation orientation;
@@ -499,6 +502,15 @@
 		{
 			[[self delegate] flipViewController:self didFinishAnimating:animationFinished previousViewController:self.sourceController transitionCompleted:transitionCompleted];
 		}
+		
+		// Send notification.
+		NSDictionary *info = [NSDictionary dictionaryWithObjects:
+							  [NSArray arrayWithObjects:[NSNumber numberWithBool:animationFinished], [NSNumber numberWithBool:transitionCompleted], self.sourceController, self.destinationController, nil]
+													  forKeys:
+							  [NSArray arrayWithObjects:MPAnimationFinishedKey, MPTransitionCompletedKey, MPPreviousControllerKey, MPNewControllerKey, nil]];
+		[[NSNotificationCenter defaultCenter] postNotificationName:MPFlipViewControllerDidFinishAnimatingNotification
+															object:self
+														  userInfo:info];
 	}
 	
 	// clear remaining flags

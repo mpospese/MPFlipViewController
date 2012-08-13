@@ -19,6 +19,7 @@
 
 @property (assign, nonatomic) int previousIndex;
 @property (assign, nonatomic) int tentativeIndex;
+@property (assign, nonatomic) BOOL observerAdded;
 
 @end
 
@@ -70,14 +71,36 @@
 	{
 		[self.frame setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"Pattern - Apple Wood"]]];
 	}
+	
+	[self addObserver];
 }
 
 - (void)viewDidUnload
 {
 	[self setCorkboard:nil];
 	[self setFrame:nil];
+	[self removeObserver];
     [super viewDidUnload];
+	
     // Release any retained subviews of the main view.
+}
+
+- (void)addObserver
+{
+	if (![self observerAdded])
+	{
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(flipViewControllerDidFinishAnimatingNotification:) name:MPFlipViewControllerDidFinishAnimatingNotification object:nil];
+		[self setObserverAdded:YES];
+	}
+}
+
+- (void)removeObserver
+{
+	if ([self observerAdded])
+	{
+		[[NSNotificationCenter defaultCenter] removeObserver:self name:MPFlipViewControllerDidFinishAnimatingNotification object:nil];
+		[self setObserverAdded:NO];
+	}
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -144,6 +167,13 @@
 		return nil; // reached end, don't wrap
 	self.tentativeIndex = index;
 	return [self contentViewWithIndex:index];	
+}
+
+#pragma mark - Notifications
+
+- (void)flipViewControllerDidFinishAnimatingNotification:(NSNotification *)notification
+{
+	NSLog(@"Notification received: %@", notification);
 }
 
 @end
