@@ -73,7 +73,7 @@ typedef NSInteger MPFlipViewControllerDirection; // For 'MPFlipViewControllerOri
 // The following notification has a userInfo key "MPAnimationFinished" with an NSNumber (bool, YES/NO) value,
 // an "MPTransitionCompleted" key with an NSNumber (bool, YES/NO) value,
 // an "MPPreviousController" key with a UIViewController value, and
-// an "MPNewController" key with a UIViewController value
+// an "MPNewController" key with a UIViewController value (will be NSNull for rubber-banding past first/last controller)
 #define MPAnimationFinishedKey @"MPAnimationFinished"
 #define MPTransitionCompletedKey @"MPTransitionCompleted"
 #define MPPreviousControllerKey @"MPPreviousController"

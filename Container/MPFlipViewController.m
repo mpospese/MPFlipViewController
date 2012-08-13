@@ -504,8 +504,10 @@ NSString *MPFlipViewControllerDidFinishAnimatingNotification = @"com.markpospese
 		}
 		
 		// Send notification.
+		id previousController = self.sourceController? self.sourceController : [NSNull null];
+		id newController = self.destinationController? self.destinationController : [NSNull null];
 		NSDictionary *info = [NSDictionary dictionaryWithObjects:
-							  [NSArray arrayWithObjects:[NSNumber numberWithBool:animationFinished], [NSNumber numberWithBool:transitionCompleted], self.sourceController, self.destinationController, nil]
+							  [NSArray arrayWithObjects:[NSNumber numberWithBool:animationFinished], [NSNumber numberWithBool:transitionCompleted], previousController, newController, nil]
 													  forKeys:
 							  [NSArray arrayWithObjects:MPAnimationFinishedKey, MPTransitionCompletedKey, MPPreviousControllerKey, MPNewControllerKey, nil]];
 		[[NSNotificationCenter defaultCenter] postNotificationName:MPFlipViewControllerDidFinishAnimatingNotification
