@@ -9,7 +9,7 @@ This is the app to accompany my talk ["Implementing Custom Container View Contro
   
 Requirements
 ------------
-* Xcode 4.3 or higher
+* Xcode 4.4 or higher
 * LLVM compiler
 * iOS 5 or higher
 * ARC
