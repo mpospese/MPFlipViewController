@@ -32,6 +32,7 @@
 		4D16417515989D7B004FD2DC /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4D16417415989D7B004FD2DC /* Icon@2x.png */; };
 		4D16417715989D84004FD2DC /* Icon-72.png in Resources */ = {isa = PBXBuildFile; fileRef = 4D16417615989D84004FD2DC /* Icon-72.png */; };
 		4D16417915989D88004FD2DC /* Icon-72@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4D16417815989D88004FD2DC /* Icon-72@2x.png */; };
+		4D3916B6160D735300514EFD /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4D3916B5160D735300514EFD /* Default-568h@2x.png */; };
 		4D4D4E1815AAE2F4003DA356 /* Pattern - Aged Paper@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4D4D4E1515AAE2F4003DA356 /* Pattern - Aged Paper@2x.png */; };
 		4D4D4E1915AAE2F4003DA356 /* Pattern - Apple Wood@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4D4D4E1615AAE2F4003DA356 /* Pattern - Apple Wood@2x.png */; };
 		4D4D4E1A15AAE2F4003DA356 /* Pattern - Corkboard@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4D4D4E1715AAE2F4003DA356 /* Pattern - Corkboard@2x.png */; };
@@ -80,6 +81,7 @@
 		4D16417415989D7B004FD2DC /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon@2x.png"; sourceTree = "<group>"; };
 		4D16417615989D84004FD2DC /* Icon-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-72.png"; sourceTree = "<group>"; };
 		4D16417815989D88004FD2DC /* Icon-72@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-72@2x.png"; sourceTree = "<group>"; };
+		4D3916B5160D735300514EFD /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		4D4D4E1515AAE2F4003DA356 /* Pattern - Aged Paper@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Pattern - Aged Paper@2x.png"; sourceTree = "<group>"; };
 		4D4D4E1615AAE2F4003DA356 /* Pattern - Apple Wood@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Pattern - Apple Wood@2x.png"; sourceTree = "<group>"; };
 		4D4D4E1715AAE2F4003DA356 /* Pattern - Corkboard@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Pattern - Corkboard@2x.png"; sourceTree = "<group>"; };
@@ -106,6 +108,7 @@
 		4D09C372157CC025000CFE0F = {
 			isa = PBXGroup;
 			children = (
+				4D3916B5160D735300514EFD /* Default-568h@2x.png */,
 				4D16417815989D88004FD2DC /* Icon-72@2x.png */,
 				4D16417615989D84004FD2DC /* Icon-72.png */,
 				4D16417415989D7B004FD2DC /* Icon@2x.png */,
@@ -272,6 +275,7 @@
 				4D4D4E1815AAE2F4003DA356 /* Pattern - Aged Paper@2x.png in Resources */,
 				4D4D4E1915AAE2F4003DA356 /* Pattern - Apple Wood@2x.png in Resources */,
 				4D4D4E1A15AAE2F4003DA356 /* Pattern - Corkboard@2x.png in Resources */,
+				4D3916B6160D735300514EFD /* Default-568h@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
