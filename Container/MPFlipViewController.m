@@ -464,6 +464,13 @@ NSString *MPFlipViewControllerDidFinishAnimatingNotification = @"com.markpospese
 	
 	// set the back page in the vertical position (midpoint of animation)
 	[self.flipTransition prepareForStage2];
+
+    // Call delegate
+    if ([self isGestureDriven]) {
+        if ([self.delegate respondsToSelector:@selector(flipViewControllerWillStartAnimating:previousViewController:)]) {
+            [self.delegate flipViewControllerWillStartAnimating:self previousViewController:self.sourceController];
+        }
+    }
 }
 
 - (void)endFlipAnimation:(BOOL)animationFinished transitionCompleted:(BOOL)transitionCompleted completion:(void (^)(BOOL finished))completion
