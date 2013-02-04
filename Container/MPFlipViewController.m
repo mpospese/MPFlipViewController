@@ -467,8 +467,8 @@ NSString *MPFlipViewControllerDidFinishAnimatingNotification = @"com.markpospese
 
     // Call delegate
     if ([self isGestureDriven]) {
-        if ([self.delegate respondsToSelector:@selector(flipViewControllerWillStartAnimating:previousViewController:)]) {
-            [self.delegate flipViewControllerWillStartAnimating:self previousViewController:self.sourceController];
+        if ([self.delegate respondsToSelector:@selector(flipViewControllerWillStartAnimating:previousViewController:destinationViewController:)]) {
+            [self.delegate flipViewControllerWillStartAnimating:self previousViewController:self.sourceController destinationViewController:destinationController];
         }
     }
 }

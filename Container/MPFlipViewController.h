@@ -51,7 +51,7 @@ typedef NSInteger MPFlipViewControllerDirection; // For 'MPFlipViewControllerOri
 
 @optional
 
-- (void)flipViewControllerWillStartAnimating:(MPFlipViewController *)flipViewController previousViewController:(UIViewController *)previousViewController;
+- (void)flipViewControllerWillStartAnimating:(MPFlipViewController *)flipViewController previousViewController:(UIViewController *)previousViewController destinationViewController:(UIViewController *)destinationViewController;
 
 // handle this to be notified when page flip animations have finished
 - (void)flipViewController:(MPFlipViewController *)flipViewController didFinishAnimating:(BOOL)finished previousViewController:(UIViewController *)previousViewController transitionCompleted:(BOOL)completed;
