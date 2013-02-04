@@ -194,6 +194,15 @@ NSString *MPFlipViewControllerDidFinishAnimatingNotification = @"com.markpospese
 	}
 }
 
+- (void)showNextViewControllerHint
+{
+    [self setRubberbanding:YES];
+    [self startFlipToViewController:nil fromViewController:self.childViewController withDirection:MPFlipViewControllerDirectionForward];
+    [self.flipTransition performRubberband:^(BOOL finished) {
+    			[self endFlipAnimation:finished transitionCompleted:NO completion:nil];
+    		}];
+}
+
 #pragma mark - Gesture handlers
 
 - (void)handleTap:(UITapGestureRecognizer *)gestureRecognizer
@@ -550,11 +559,7 @@ NSString *MPFlipViewControllerDidFinishAnimatingNotification = @"com.markpospese
 	UIViewController *nextController = [[self dataSource] flipViewController:self viewControllerAfterViewController:[self viewController]];
 	if (!nextController)
 	{
-		[self setRubberbanding:YES];
-		[self startFlipToViewController:nil fromViewController:self.childViewController withDirection:MPFlipViewControllerDirectionForward];
-		[self.flipTransition performRubberband:^(BOOL finished) {
-			[self endFlipAnimation:finished transitionCompleted:NO completion:nil];
-		}];
+		[self showNextViewControllerHint];
 		return;
 	}
 	
