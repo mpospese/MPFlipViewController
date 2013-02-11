@@ -14,15 +14,15 @@
 // Generates an image from the view (view must be opaque)
 + (UIImage *)renderImageFromView:(UIView *)view
 {
-	return [self renderImageFromView:view withRect:view.bounds];
+	return [self renderImageFromView:view withRect:view.bounds opaque:YES];
 }
 
-// Generates an image from the (opaque) view where frame is a rectangle in the view's coordinate space.
+// Generates an image from the view where frame is a rectangle in the view's coordinate space.
 // Pass in bounds to render the entire view, or another rect to render a subset of the view
-+ (UIImage *)renderImageFromView:(UIView *)view withRect:(CGRect)frame
++ (UIImage *)renderImageFromView:(UIView *)view withRect:(CGRect)frame opaque:(BOOL)opaque
 {
     // Create a new context of the desired size to render the image
-	UIGraphicsBeginImageContextWithOptions(frame.size, YES, 0);
+	UIGraphicsBeginImageContextWithOptions(frame.size, opaque, 0);
 	CGContextRef context = UIGraphicsGetCurrentContext();
 	
 	// Translate it, to the desired position
