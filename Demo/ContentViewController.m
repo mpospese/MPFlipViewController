@@ -36,17 +36,17 @@
 	switch ([self movieIndex]) {
 		case 1:
 			self.titleLabel.text = @"The Matrix (1999)";
-			self.descriptionField.text = @"A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.";
+			self.descriptionField.text = @"A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.  Neo and the rebel leaders estimate that they have 72 hours until 250,000 probes discover Zion and destroy it and its inhabitants. During this, Neo must decide how he can save Trinity from a dark fate in his dreams.  Neo and the rebel leaders estimate that they have 72 hours until 250,000 probes discover Zion and destroy it and its inhabitants. During this, Neo must decide how he can save Trinity from a dark fate in his dreams.";
 			break;
 			
 		case 2:
 			self.titleLabel.text = @"The Matrix Reloaded (2003)";
-			self.descriptionField.text = @"Neo and the rebel leaders estimate that they have 72 hours until 250,000 probes discover Zion and destroy it and its inhabitants. During this, Neo must decide how he can save Trinity from a dark fate in his dreams.";
+			self.descriptionField.text = @"Neo and the rebel leaders estimate that they have 72 hours until 250,000 probes discover Zion and destroy it and its inhabitants. During this, Neo must decide how he can save Trinity from a dark fate in his dreams.  Neo and the rebel leaders estimate that they have 72 hours until 250,000 probes discover Zion and destroy it and its inhabitants. During this, Neo must decide how he can save Trinity from a dark fate in his dreams.";
 			break;
 			
 		case 3:
 			self.titleLabel.text = @"The Matrix Revolutions (2003)";
-			self.descriptionField.text = @"The human city of Zion defends itself against the massive invasion of the machines as Neo fights to end the war at another front while also opposing the rogue Agent Smith.";
+			self.descriptionField.text = @"The human city of Zion defends itself against the massive invasion of the machines as Neo fights to end the war at another front while also opposing the rogue Agent Smith.  Neo and the rebel leaders estimate that they have 72 hours until 250,000 probes discover Zion and destroy it and its inhabitants. During this, Neo must decide how he can save Trinity from a dark fate in his dreams.";
 			break;
 			
 		default:
