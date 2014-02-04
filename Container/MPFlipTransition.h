@@ -17,6 +17,13 @@
 @property (assign, nonatomic) CGFloat coveredPageShadowOpacity;
 @property (assign, nonatomic) CGFloat flippingPageShadowOpacity;
 @property (strong, nonatomic) UIColor *flipShadowColor;
+
+/**
+ * Set it to NO to make MPTransition generate layers with non-opaque background.
+ * Default: YES.
+ */
+@property (nonatomic, assign) BOOL shouldRenderOpaqueViews;
+
 @property (readonly, nonatomic) MPFlipAnimationStage stage;
 @property (assign, nonatomic) CGFloat rubberbandMaximumProgress; // how far up rubberband animation should pull
 

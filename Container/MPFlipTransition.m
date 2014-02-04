@@ -78,6 +78,7 @@ static inline double mp_radians (double degrees) {return degrees * M_PI/180;}
 		_stage = MPFlipAnimationStage1;
 		_rubberbandMaximumProgress = DEFAULT_RUBBERBAND_MAX_PROGRESS;
 		_shouldRenderAllViews = YES;
+        _shouldRenderOpaqueViews = YES;
 	}
 	
 	return self;
@@ -285,10 +286,10 @@ static inline double mp_radians (double degrees) {return degrees * M_PI/180;}
 			break;
 	}
 	
-	UIImage *pageFacingImage = drawFacing? [MPAnimation renderImageFromView:self.sourceView withRect:forwards? upperRect : lowerRect] : nil;
+	UIImage *pageFacingImage = drawFacing? [MPAnimation renderImageFromView:self.sourceView withRect:forwards ? upperRect : lowerRect opaque:self.shouldRenderOpaqueViews] : nil;
 	
 	UIImage *pageBackImage = isRubberbanding? nil : [MPAnimation renderImageFromView:self.destinationView withRect:forwards? destUpperRect : destLowerRect transparentInsets:insets];
-	UIImage *pageRevealImage = drawReveal? [MPAnimation renderImageFromView:self.destinationView withRect:forwards? destLowerRect : destUpperRect] : nil;
+	UIImage *pageRevealImage = drawReveal? [MPAnimation renderImageFromView:self.destinationView withRect:forwards ? destLowerRect : destUpperRect opaque:self.shouldRenderOpaqueViews] : nil;
 	
 	CATransform3D transform = CATransform3DIdentity;
 	
