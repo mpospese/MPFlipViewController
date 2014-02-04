@@ -45,6 +45,9 @@ typedef NSInteger MPFlipViewControllerDirection; // For 'MPFlipViewControllerOri
 // flip to a new page
 - (void)setViewController:(UIViewController *)viewController direction:(MPFlipViewControllerDirection)direction animated:(BOOL)animated completion:(void (^)(BOOL finished))completion;
 
+// slightly animate the displayed view controller to give a hint to the user that a next view controller is available.
+- (void)showNextViewControllerHint;
+
 @end
 
 @protocol MPFlipViewControllerDelegate<NSObject>
