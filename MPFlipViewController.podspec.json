@@ -1,0 +1,22 @@
+{
+  "name": "MPFlipViewController",
+  "version": "0.0.2",
+  "summary": "Container view controller (iOS 5 containment API) that navigates between child view controllers via touch gestures and page-flip animations.",
+  "description": "A custom container view controller following the iOS 5 containment API that navigates between child view controllers via touch gestures and page-flip animations.",
+  "homepage": "http://markpospesel.com/2012/07/28/mpflipviewcontroller/",
+  "license": {
+    "type": "Modified BSD License",
+    "file": "LICENSE.txt"
+  },
+  "authors": "Mark Pospesel",
+  "source": {
+    "git": "https://github.com/mpospese/MPFlipViewController.git",
+    "branch": "master"
+  },
+  "platforms": {
+    "ios": "5.0"
+  },
+  "source_files": "Container",
+  "requires_arc": true,
+  "frameworks": "QuartzCore"
+}
